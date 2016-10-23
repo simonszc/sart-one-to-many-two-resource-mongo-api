@@ -23,3 +23,12 @@ noteRouter.get('/api/list/:listID/note/:noteID', jsonParser, function(req, res,n
   })
   .catch(next);
 });
+
+noteRouter.put('/api/list/:listID/note/:noteID', jsonParser, function(req, res, next) {
+  Note.findByIdAndUpdate(req.params.noteID, req.body, {new: true})
+  .then( note => res.json(note))
+  .catch(err => {
+    if (err.name === 'ValidationError') return next(err);
+    next(createError(404, err.message));
+  });
+});
