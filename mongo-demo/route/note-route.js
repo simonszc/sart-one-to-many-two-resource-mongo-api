@@ -32,3 +32,12 @@ noteRouter.put('/api/list/:listID/note/:noteID', jsonParser, function(req, res, 
     next(createError(404, err.message));
   });
 });
+
+noteRouter.delete('/api/list/:listID/note/:noteID', function(req, res, next) {
+  Promise.all([
+    List.findByIdAndRemoveNoteById(req.params.listID, req.params.noteID),
+    Note.findByIdAndRemove(req.params.noteID)
+  ])
+  .then( results => res.json(results))
+  .catch(err => next(createError(404, err.message)))
+})

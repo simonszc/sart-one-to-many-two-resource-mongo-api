@@ -133,4 +133,45 @@ describe('testing note routes', function() {
       });
     });
   });
+  describe('testing DELETE requests', function() {
+    describe('with valid list listID and noteID', function() {
+      before( done => {
+        new List(exampleList).save()
+        .then( list => {
+          this.tempList = list;
+        })
+        .then( () => {
+          exampleNote.listID = this.tempList._id;
+          new Note(exampleNote).save()
+          .then( note => {
+            this.tempNote = note;
+            done();
+          })
+          .catch(done);
+        })
+        .catch(done);
+      });
+      after( done => {
+        Promise.all([
+          List.remove({}),
+          Note.remove({})
+        ])
+        .then(() => done())
+        .catch(done);
+      });
+      it('should return a note', (done) => {
+        request.delete(`${url}/api/list/${this.tempList.id}/note/${this.tempNote.id}`)
+        .end((err, res) => {
+          if(err) return done(err);
+          console.log(res.body);
+          expect(res.body[0].notes.length).to.equal(0);
+          expect(res.body[1].name).to.equal(exampleNote.name);
+          expect(res.body[1].content).to.equal(exampleNote.content);
+          expect(res.body[1].listID).to.equal(this.tempList._id.toString());
+          expect(res.body[1]._id).to.equal(this.tempNote._id.toString());
+          done();
+        });
+      });
+    });
+  });
 });

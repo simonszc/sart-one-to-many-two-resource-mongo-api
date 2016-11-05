@@ -45,7 +45,8 @@ listRouter.get('/api/list', pageMiddleware, function(req, res, next) {
   let page = req.query.page;
 
   let skip = offset + pageSize * page;
-  List.find({}).skip(skip).limit(pageSize)
+   List.find({})
+   .skip(skip).limit(pageSize)
   .then( lists => res.json(lists))
   .catch(next)
 })

@@ -32,3 +32,19 @@ List.findByIdAndAddNote = function(id, note) {
     return this.tempNote;
   });
 };
+
+List.findByIdAndRemoveNoteById = function(listID, noteID) {
+  return List.findById(listID)
+  .catch(err => Promise.reject(createError(404, err.message)))
+  .then(list => {
+    //delete the note from the list
+    this.tempList = list;
+    return list.notes.filter( _noteID => {
+      return noteID.toString() !== _noteID.toString()
+    });
+  })
+  .then(notes => {
+    this.tempList.notes = notes;
+    return this.tempList.save()
+  })
+}
